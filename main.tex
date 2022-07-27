@@ -38,8 +38,14 @@
 \usepackage{amsfonts, amsmath, amsthm, amssymb} % For math fonts, symbols and environments
 \usepackage{wrapfig} % Allows wrapping text around tables and figures
 
-\usepackage[maxnames=1,backend=biber]{biblatex}
+\usepackage[maxnames=1,backend=biber,doi=false]{biblatex}
 \addbibresource{reference.bib}
+\AtEveryBibitem{%
+  \ifentrytype{article}{%
+    \clearfield{pages}%
+  }{%
+  }%
+}
 
 \begin{document}
 
@@ -151,34 +157,10 @@ interference jamming the wireless channel.
 
 % What we propose + what it does
 FoReCo~\cite{foreco} does not make assumptions on the network
-delays and
-feeds the robot drivers with
-the lost/delayed commands it recovers through
-forecasting -- see Figure~\ref{fig:foreco}.
-% FoReCo control loop
-FoReCo receives the remote
-control commands and checks if they
-are received at the expected
-frequency, e.g., each 150ms.
-In case a command does not arrive
-on time (due to 802.11~collisions
-or interference not recovered
-with error-correction),
-FoReCo forecasts/infers
-the out of time command using the
-recent command history.
-
-
-% Explain the ML model
-In this demonstration
-FoReCo uses a multinomial 
-logistic regression that we
-train using a real-world dataset
-of an experienced
-robotic arm operator.
-The
-ML model
-receives as \textbf{input}:
+delays and infers the commands that did not arrive
+at the expected 150ms frequency.
+FoReCo infers the lost commands with a
+multinomial regression that takes as \textbf{input}:
 \begin{enumerate}
     \item the \textbf{position} of each joint $j_i(t), \forall i$;
     \item for \textbf{how long} each joint has
@@ -242,7 +224,7 @@ control commands.
 %	FoReCo deployment
 %----------------------------------------------------------------------------------------
 
-\section*{FoReCo deployment}
+\section*{FoReCo deployment in a real-world platform}
 \label{sec:deep}
 
 % How we pack FoReCo for DEEP
@@ -276,14 +258,13 @@ The resulting NS with the aforementioned VNFs is deployed on top of a joint fog0
 \end{center}\vspace{1cm}
 
 % FoReCo is packed, lets deploy it!
-Once FoReCo is packed inside the
-aforementioned NS,
-we use the DEEP platform~\cite{deep} 
-for its automated ML training, deployment,
-life-cycle management, and termination. While the BASS module of the DEEP simplifies and automates the creation and management of the  NS by being the logical entry point for the user, the IESS module facilitates the training and provisioning of FoReCo by providing an intent-driven approach and AutoAI solutions. The deployment through
-the DEEP platform proofs that FoReCo
-is ready to be integrated in real
-world platforms.
+We use the DEEP platform~\cite{deep} 
+to train FoReCo multinomial regression, deploy it,
+do life-cycle management, and termination. While the BASS module of the DEEP simplifies and automates the creation and management of the  NS by being the logical entry point for the user, the IESS module facilitates the training and provisioning of FoReCo by providing an intent-driven approach and AutoAI solutions.
+% The deployment through
+% the DEEP platform proofs that FoReCo
+% is ready to be integrated in real
+% world platforms.
 
 
 %\begin{table}[!ht]
@@ -364,13 +345,10 @@ To assess the performance evaluation of FoReCo,
 we have tested it in a simulation environment that
 follows a mathematical model for IEEE~802.11 packet
 losses upon interference~\cite{foreco}.
-The considered model allows
-to increase the number of robots present in a robot
-factory and study the impact of packet collisions in
-the shared wireless medium.
 Figure~\ref{fig:heatmap-error} illustrates the average
-trajectory deviation of 25 robot manipulators that
-are remotely controlled in a factory floor.
+trajectory deviation of a simulated scenario
+with 25 robot manipulators with/without FoReCo
+as they are remotely controlled in a factory floor.
 
 \begin{center}\vspace{1cm}
      \includegraphics[width=.48\linewidth]{figures/soa-forecasts-rmse-heatmap-data-25-stas.eps}%
@@ -400,7 +378,7 @@ the drivers with a stable feed of control commands
 that prevent rotors' damage.
 
 \begin{center}\vspace{1cm}
-    \includegraphics[width=.79\linewidth]{figures/foreco-experim-out-xyz-zoomed.pdf}
+    \includegraphics[width=.85\linewidth]{figures/foreco-experim-out-xyz-zoomed.pdf}
     \captionof{figure}{Robot trajectory upon IEEE 802.11 jammer interference}
     \label{fig:jammer-trajectories}
 \end{center}\vspace{1cm}
@@ -435,6 +413,11 @@ that prevent rotors' damage.
 
 \section*{Acknowledgements}
 This work has been partly funded by the European Commission through the H2020 project Hexa-X (Grant Agreement no. 101015956), and the Spanish Ministry of Economic Affairs and Digital Transformation and the European Union-NextGenerationEU through the UNICO 5G I+D 6G-EDGEDT and 6G-DATADRIVEN.
+
+\begin{center}\vspace{1cm}
+    \includegraphics[width=.8\linewidth]{figures/ack-logos.png}
+    \label{fig:foreco}
+\end{center}\vspace{1cm}
 
 
 
