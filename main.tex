@@ -38,14 +38,32 @@
 \usepackage{amsfonts, amsmath, amsthm, amssymb} % For math fonts, symbols and environments
 \usepackage{wrapfig} % Allows wrapping text around tables and figures
 
-\usepackage[maxnames=1,backend=biber,doi=false]{biblatex}
+\usepackage[maxnames=1,backend=biber,doi=true]{biblatex}
 \addbibresource{reference.bib}
-\AtEveryBibitem{%
-  \ifentrytype{article}{%
-    \clearfield{pages}%
-  }{%
-  }%
-}
+% \AtEveryBibitem{%
+%   \ifentrytype{article}{%
+%     \clearfield{pages}%
+%   }{%
+%   }%
+% }
+
+
+
+
+\makeatletter
+\renewenvironment{abstract}{%
+    \if@twocolumn
+      \section*{\abstractname}%
+    \else %% <- here I've removed \small
+        {\bfseries \Large\abstractname\vspace{\z@}}%  %% <- here I've added \Large
+      \quotation
+    \fi}
+    {\if@twocolumn\else\endquotation\fi}
+\makeatother
+
+
+
+
 
 \begin{document}
 
@@ -68,25 +86,27 @@
 \end{minipage}
 %
 \begin{minipage}[b]{0.25\linewidth}
+\color{DarkSlateGray} % DarkSlateGray color for the rest of the content
     \includegraphics[width=15cm]{logo-uc3m.eps}
-    \hspace*{2cm}\includegraphics[width=12cm]{logo-telcaria.eps}\\[7cm]
+    \hspace*{2cm}\includegraphics[width=10cm]{logo-telcaria.eps}\vspace{1cm}
+    \hspace*{5cm}\includegraphics[width=5cm]{qr.eps}\\
+    \hspace*{3.31cm}\large \textbf{arXiv:2205.04189}\\[0.1cm]
 \end{minipage}
 
 \vspace{1cm} % A bit of extra whitespace between the header and poster content
 
-%----------------------------------------------------------------------------------------
 
-\begin{multicols}{2} % This is how many columns your poster will be broken into, a portrait poster is generally split into 2 columns
+
+
+
+
 
 %----------------------------------------------------------------------------------------
 %	ABSTRACT
 %----------------------------------------------------------------------------------------
-
-% \color{Navy} % Navy color for the abstract
 \color{DarkSlateGray} % DarkSlateGray color for the rest of the content
-
-\begin{abstract}
-        This demonstration presents FoReCo~\cite{foreco},
+\section*{Abstract}
+This demonstration presents FoReCo~\cite{foreco},
     a solution to recover lost control
     commands in remotely controlled
     robots. In the demonstration,
@@ -100,45 +120,53 @@
     that we train with a real-world dataset. The demonstration shows how FoReCo recovers the lost commands, and how the robot arm operates smoothly despite the losses that are present in the wireless medium.
 
 
-\end{abstract}
 
 %----------------------------------------------------------------------------------------
-%	INTRODUCTION
-%----------------------------------------------------------------------------------------
 
-%\color{SaddleBrown} % SaddleBrown color for the introduction
+\begin{multicols}{2} % This is how many columns your poster will be broken into, a portrait poster is generally split into 2 columns
+
+
+% \color{Navy} % Navy color for the abstract
 \color{DarkSlateGray} % DarkSlateGray color for the rest of the content
 
 
-\section*{Introduction}
-\label{sec:intro}
-
-% Remote control I4.0, 99.999% & losses consequences
-Real-time remote control of robotic manipulators is
-of high interest for industry~4.0 use cases,
-since it reduces costs and the exposure of
-operators to hazard situations.
-However, the presence of packet losses in
-the the network lead to trajectory deviations
-that prevent the robot from achieving
-the expected 99.9999\% reliability.
-% SoA
-The mechatronics and robotic community
-propose to overcome the lost/delayed 
-control commands using time domain
-passivity-based~\cite{TDPC-3}, and
-wave-variable passivity-based~\cite{wvbc-4}
-approaches that assume constant
-network delays~\cite{TDPC-5},
-or delays with small 
-variability~\cite{TDPC-3,wvbc-4}.
-Such assumptions on the network delay
-do not apply for robots connected using
-IEEE~802.11 wireless technology,
-which suffers from uncontrolled
-packet losses and delays. Specially
-in industrial scenarios with electromagnetic
-interference jamming the wireless channel.
+%% %----------------------------------------------------------------------------------------
+%% %	INTRODUCTION
+%% %----------------------------------------------------------------------------------------
+%% 
+%% %\color{SaddleBrown} % SaddleBrown color for the introduction
+%% \color{DarkSlateGray} % DarkSlateGray color for the rest of the content
+%% 
+%% 
+%% \section*{Introduction}
+%% \label{sec:intro}
+%% 
+%% % Remote control I4.0, 99.999% & losses consequences
+%% Real-time remote control of robotic manipulators is
+%% of high interest for industry~4.0 use cases,
+%% since it reduces costs and the exposure of
+%% operators to hazard situations.
+%% However, the presence of packet losses in
+%% the the network lead to trajectory deviations
+%% that prevent the robot from achieving
+%% the expected 99.9999\% reliability.
+%% % SoA
+%% The mechatronics and robotic community
+%% propose to overcome the lost/delayed 
+%% control commands using time domain
+%% passivity-based~\cite{TDPC-3}, and
+%% wave-variable passivity-based~\cite{wvbc-4}
+%% approaches that assume constant
+%% network delays~\cite{TDPC-5},
+%% or delays with small 
+%% variability~\cite{TDPC-3,wvbc-4}.
+%% Such assumptions on the network delay
+%% do not apply for robots connected using
+%% IEEE~802.11 wireless technology,
+%% which suffers from uncontrolled
+%% packet losses and delays. Specially
+%% in industrial scenarios with electromagnetic
+%% interference jamming the wireless channel.
 
 
 
@@ -148,11 +176,10 @@ interference jamming the wireless channel.
 %	FoReCo
 %----------------------------------------------------------------------------------------
 
-\color{DarkSlateGray} % DarkSlateGray color for the rest of the content
 
 
 
-\section*{FoReCo solution}
+\section*{FoReCo \& remote control}
 \label{sec:foreco}
 
 % What we propose + what it does
@@ -172,13 +199,13 @@ Using the input (1)-(3),
 FoReCo runs the multinomial logistic
 regression and \textbf{outputs}
 if the lost command
-was an up/down movement,
-a righ/left sweep, 
-or a grab/release action.
-The repetitive pick-and-place task
-fosters FoReCo's accuracy
-when it forecasts lost remote
-control commands.
+was an \textbf{up/down} movement,
+a \textbf{righ/left} sweep, 
+or a \textbf{grab/release} action.
+%% The repetitive pick-and-place task
+%% fosters FoReCo's accuracy
+%% when it forecasts lost remote
+%% control commands.
 
 
 
@@ -217,6 +244,27 @@ control commands.
 
 
 
+%% %----------------------------------------------------------------------------------------
+%% %	Impact of losses
+%% %----------------------------------------------------------------------------------------
+%% 
+%% \section*{Lost/delayed control commands deviate the trajectory}
+%% Although occasional command losses may be
+%% irrelevant, they actually play a key role
+%% in the distortion of the robot trajectory
+%% as it is remotely controlled~\cite{5g-acias}. Either
+%% control commands are lost or do not arrive
+%% at the expected frequency, this leads to
+%% the trajectory error illustrated in
+%% Figure~\ref{fig:trajectory-error}.
+%% 
+%% \begin{center}\vspace{1cm}
+%%     \includegraphics[width=.84\linewidth]{figures/foreco-problem-statement-two-lines.eps}
+%%     \captionof{figure}{Impact of delayed and lost commands in the robot trajectory.}
+%%     \label{fig:trajectory-error}
+%% \end{center}\vspace{1cm}
+
+
 
 
 
@@ -224,43 +272,45 @@ control commands.
 %	FoReCo deployment
 %----------------------------------------------------------------------------------------
 
-\section*{FoReCo deployment in a real-world platform}
-\label{sec:deep}
+%% \section*{FoReCo deployment in a real-world platform}
+%% \label{sec:deep}
+%% 
+%% FoReCo is ready to be deployed in real-world
+%% platforms as DEEP/IEES~\cite{deep}
+%% (see Figure~\ref{fig:setup})
+%% to benefit from their monitoring, 
+%% training, and automation functionalities.
 
-% How we pack FoReCo for DEEP
-In order to deploy FoReCo we create
-a Network Service (NS) with six
-Virtual Network Functions (VNFs)
-illustrated as red boxes
-in Figure~\ref{fig:setup}:
-(1) the \textbf{FoReCo} VNF to assess the command
-recovery;
-(2) the robot \textbf{drivers} VNF
-% are low-level software interfaces that
-to control and monitor the robotic arm hardware;
-(3) the \textbf{niryo-one-interface} and (4) \textbf{niryo-one-motion} to provide high-level abstraction for the core robot functionalities; (5) the \textbf{niryo-one-web} VNF to provide a set of tools (e.g., web interface, joystick/automated robot control, calibration) that facilitate the user interaction with the robot; and
-(6) the \textbf{niryo-ros-master} as a central
-entity to coordinate the communication among VNFs.
-The niryo-one-web/interface/motion/master and the
-drivers VNFs are implemented using
-the Robot Operating System
-(ROS)%~\cite{ros},
-and the FoReCo VNF is implemented
-using 
-scikit-learn%~\cite{scikit-learn}
-to forecast/infer lost commands.
-The resulting NS with the aforementioned VNFs is deployed on top of a joint fog05/Kubernetes cluster where the robot drivers VNF is deployed as a ROS native app using fog05. The niryo-one-web/interface/motion/master are deployed as containers using Kubernetes.
+%% % How we pack FoReCo for DEEP
+%% In order to deploy FoReCo we create
+%% a Network Service (NS) with six
+%% Virtual Network Functions (VNFs)
+%% illustrated as red boxes
+%% in Figure~\ref{fig:setup}:
+%% (1) the \textbf{FoReCo} VNF to assess the command
+%% recovery;
+%% (2) the robot \textbf{drivers} VNF
+%% % are low-level software interfaces that
+%% to control and monitor the robotic arm hardware;
+%% (3) the \textbf{niryo-one-interface} and (4) \textbf{niryo-one-motion} to provide high-level abstraction for the core robot functionalities; (5) the \textbf{niryo-one-web} VNF to provide a set of tools (e.g., web interface, joystick/automated robot control, calibration) that facilitate the user interaction with the robot; and
+%% (6) the \textbf{niryo-ros-master} as a central
+%% entity to coordinate the communication among VNFs.
+%% The niryo-one-web/interface/motion/master and the
+%% drivers VNFs are implemented using
+%% the Robot Operating System
+%% (ROS)%~\cite{ros},
+%% and the FoReCo VNF is implemented
+%% using 
+%% scikit-learn%~\cite{scikit-learn}
+%% to forecast/infer lost commands.
+%% The resulting NS with the aforementioned VNFs is deployed on top of a joint fog05/Kubernetes cluster where the robot drivers VNF is deployed as a ROS native app using fog05. The niryo-one-web/interface/motion/master are deployed as containers using Kubernetes.
 
 
-\begin{center}\vspace{1cm}
-	\includegraphics[width=\linewidth] {figures/experimental-setup.pdf}
-    \captionof{figure}{FoReCo-assisted remote control (red) deployed with DEEP modules (purple). Three GUIs are used to deploy the service (left), calibrate/control the robot (middle), and visualize FoReCo command recovery (right).}\label{fig:setup}
-\end{center}\vspace{1cm}
 
-% FoReCo is packed, lets deploy it!
-We use the DEEP platform~\cite{deep} 
-to train FoReCo multinomial regression, deploy it,
-do life-cycle management, and termination. While the BASS module of the DEEP simplifies and automates the creation and management of the  NS by being the logical entry point for the user, the IESS module facilitates the training and provisioning of FoReCo by providing an intent-driven approach and AutoAI solutions.
+%% % FoReCo is packed, lets deploy it!
+%% We use the DEEP platform~\cite{deep} 
+%% to train FoReCo multinomial regression, deploy it,
+%% do life-cycle management, and termination. While the BASS module of the DEEP simplifies and automates the creation and management of the  NS by being the logical entry point for the user, the IESS module facilitates the training and provisioning of FoReCo by providing an intent-driven approach and AutoAI solutions.
 % The deployment through
 % the DEEP platform proofs that FoReCo
 % is ready to be integrated in real
@@ -340,50 +390,64 @@ do life-cycle management, and termination. While the BASS module of the DEEP sim
 
 
 \section*{FoReCo results}
-\subsection*{Decrease error by a 95\%}
-To assess the performance evaluation of FoReCo,
-we have tested it in a simulation environment that
-follows a mathematical model for IEEE~802.11 packet
-losses upon interference~\cite{foreco}.
-Figure~\ref{fig:heatmap-error} illustrates the average
-trajectory deviation of a simulated scenario
-with 25 robot manipulators with/without FoReCo
-as they are remotely controlled in a factory floor.
+%% \subsection*{decrease error by a 95\%}
+%% figure~\ref{fig:heatmap-error} illustrates the average
+%% trajectory deviation of a simulated scenario~\cite{foreco}
+%% with 25 robot manipulators with/without foreco
+%% as they are remotely controlled in a factory floor.
+%% 
+%% \begin{center}\vspace{1cm}
+%%      \includegraphics[width=.48\linewidth]{figures/soa-forecasts-rmse-heatmap-data-25-stas.eps}%
+%%      \hfill%
+%%      \includegraphics[width=.48\linewidth]{figures/foreco-forecasts-rmse-heatmap-data-25-stas.eps}
+%%     \captionof{figure}{trajectory error as the
+%%     interference duration and probability increase
+%%     with or without foreco (right and left).}
+%%     \label{fig:heatmap-error}
+%% \end{center}\vspace{1cm}
+%% 
+%% 
+%% 
+%% \subsection*{Smoothness upon losses \& interference}
+On the one hand,
+Figure~\ref{fig:jammer-trajectories} shows 
+that FoReCo keeps a smooth trajectory
+both during and after the interference.
+On the other hand, Figure~\ref{fig:jammer-trajectories}
+shows that the PID-based control~\cite{control-survey}
+results in a ping-pong effect that
+may damage the robot rotors after channel
+recovery.
+% Hence, FoReCo command recovery is also
+% benefitial to prevent from damaging the robot rotors
+% upon ping-pong effect.
+
+
+
 
 \begin{center}\vspace{1cm}
-     \includegraphics[width=.48\linewidth]{figures/soa-forecasts-rmse-heatmap-data-25-stas.eps}%
-     \hfill%
-     \includegraphics[width=.48\linewidth]{figures/foreco-forecasts-rmse-heatmap-data-25-stas.eps}
-    \captionof{figure}{Trajectory error as the
-    interference duration and probability increase
-    with or without FoReCo (right and left).}
-    \label{fig:heatmap-error}
-\end{center}\vspace{1cm}
-
-
-
-\subsection*{Smoothness upon losses \& interference}
-The experimental validation~\cite{foreco} shows that
-FoReCo reduces the trajectory error by guessing the
-lost control commands, yet preserving the smoothness
-of the remote control.
-Figure~\ref{fig:jammer-trajectories} shows how FoReCo
-kept as smooth control even with periodic jams
-on the IEEE~802.11 channel. On top, 
-Figure~\ref{fig:jammer-trajectories} shows that
-once the channel recovers the PID control of the
-state of the art solution suffers from a ping-pong
-effect, whilst FoReCo keeps interacting with
-the drivers with a stable feed of control commands
-that prevent rotors' damage.
-
-\begin{center}\vspace{1cm}
-    \includegraphics[width=.85\linewidth]{figures/foreco-experim-out-xyz-zoomed.pdf}
+    \includegraphics[width=.782\linewidth]{figures/foreco-experim-out-xyz-zoomed.pdf}
     \captionof{figure}{Robot trajectory upon IEEE 802.11 jammer interference}
     \label{fig:jammer-trajectories}
 \end{center}\vspace{1cm}
 
+\end{multicols}
 
+
+%\vspace{3cm}
+\section*{Demo setup}
+\label{sec:setup}
+In the demo setup we deploy FoReCo using the
+DEEP/IESS~\cite{deep} platform to enhance the
+demonstration with automation, life-cycle managament,
+and model training via a GUI. This proofs that FoReCo
+is ready to be deployed over real-world platforms
+in industrial scenarios.
+
+\begin{center}\vspace{1cm}
+	\includegraphics[width=\linewidth] {figures/experimental-setup.pdf}
+    \captionof{figure}{FoReCo-assisted remote control (red) deployed with DEEP modules (purple). Three GUIs are used to deploy the service (left), calibrate/control the robot (middle), and visualize FoReCo command recovery (right).}\label{fig:setup}
+\end{center}\vspace{1cm}
 
 
 \color{DarkSlateGray} % Set the color back to DarkSlateGray for the rest of the content
@@ -395,6 +459,9 @@ that prevent rotors' damage.
 %% \section*{Forthcoming Research}
 %% 
 %% Vivamus molestie, risus tempor vehicula mattis, libero arcu volutpat purus, sed blandit sem nibh eget turpis. Maecenas rutrum dui blandit lorem vulputate gravida. Praesent venenatis mi vel lorem tempor at varius diam sagittis. Nam eu leo id turpis interdum luctus a sed augue. Nam tellus.
+
+\begin{multicols}{2}
+
 
  %----------------------------------------------------------------------------------------
 %	REFERENCES
@@ -414,14 +481,16 @@ that prevent rotors' damage.
 \section*{Acknowledgements}
 This work has been partly funded by the European Commission through the H2020 project Hexa-X (Grant Agreement no. 101015956), and the Spanish Ministry of Economic Affairs and Digital Transformation and the European Union-NextGenerationEU through the UNICO 5G I+D 6G-EDGEDT and 6G-DATADRIVEN.
 
-\begin{center}\vspace{1cm}
-    \includegraphics[width=.8\linewidth]{figures/ack-logos.png}
+\begin{center}%\vspace{1cm}
+    \includegraphics[width=.7\linewidth]{figures/ack-logos.png}
     \label{fig:foreco}
-\end{center}\vspace{1cm}
+\end{center}%\vspace{1cm}
 
+\end{multicols}
 
 
 %----------------------------------------------------------------------------------------
 
-\end{multicols}
+%\end{multicols}
+
 \end{document}
