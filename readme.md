@@ -6,5 +6,5 @@ pdflatex main.tex
 and have the `a0poster` package of CTAN.
 It will produce the poster file `main.pdf`, which looks as below:
 
-![Poster image](main.png?raw=true "Poster")
+![Poster image](main.jpg?raw=true "Poster")
 
